@@ -1,3 +1,4 @@
+using Microsoft.Data.SqlClient;
 using MusicProAPIREST.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,12 +15,37 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+string connectionString = app.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")!;
+
+try
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    using var conn = new SqlConnection(connectionString);
+    conn.Open();
+
+    var command = new SqlCommand(
+        "Select * from Articulo", conn
+        );
+
+    using SqlDataReader reader = command.ExecuteReader();
+    if (reader.HasRows)
+    {
+        while (reader.Read())
+        {
+            Console.WriteLine(reader.GetString(1));
+        }
+    }
+
+}catch (Exception ex)
+{
+    Console.WriteLine(ex.Message);
 }
+
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
 
 app.UseHttpsRedirection();
 
