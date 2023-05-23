@@ -29,10 +29,7 @@ try
     using SqlDataReader reader = command.ExecuteReader();
     if (reader.HasRows)
     {
-        while (reader.Read())
-        {
-            Console.WriteLine("Conexion a Base de datos Exitosa!");
-        }
+        Console.WriteLine("Conexion a Base de datos Exitosa!");
     }
     else
     {

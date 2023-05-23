@@ -40,57 +40,117 @@ namespace MusicProAPIREST.Services
 
             return lista;
         }
-        /*
+        
         public dynamic GetArticuloPorId(int id)
         {
-            var articulo = listaArticulos.FirstOrDefault(a => a.idProducto == id);
-            if(articulo != null)
+            Articulo articulo = new Articulo();
+            using var conn = new SqlConnection(cs);
+            conn.Open();
+
+            var command = new SqlCommand(
+                "Select * from articulo where id = "+id, conn
+                );
+
+            using SqlDataReader reader = command.ExecuteReader();
+            if(reader != null)
             {
+                while (reader.Read())
+                {                   
+                    articulo.idProducto = reader.GetInt32(0);
+                    articulo.nombreProducto = reader.GetString(1);
+                    articulo.stockDisponible = reader.GetInt32(2);
+                    articulo.precio = reader.GetInt32(3);
+                }
+
                 return articulo;
             }
-            return "Articulo con ID: " + id + ", no existe";
+            else
+            {
+                return "Articulo con la id: "+id+", no encontrado...";
+            }
         }
 
-        public void AgregarArticulo(Articulo articulo)
+
+        public string AgregarArticulo(Articulo articulo)
         {
-            articulo.idProducto = listaArticulos.Last().idProducto + 1;
-            listaArticulos.Add(articulo);
-        }
+            using var conn = new SqlConnection(cs);
+            conn.Open();
 
+            var command = new SqlCommand(
+                $"insert into Articulo(nombre, stock_disponible, precio) values('{articulo.nombreProducto}',{articulo.stockDisponible},{articulo.precio})", conn
+                );
+            try
+            {
+                using SqlDataReader reader = command.ExecuteReader();
+                return "Articulo Guardado exitosamente.";
+
+            }
+            catch (Exception ex)
+            {
+                return "Error al guardar el articulo: " + ex.Message;
+            }
+
+        }
+        
+        
         public dynamic ModificarArticulo(int id, Articulo articulo)
         {
-            int index = listaArticulos.FindIndex(a => a.idProducto == id);
-            if(index != -1)
-            {
-                listaArticulos[index].nombreProducto = articulo.nombreProducto;
-                listaArticulos[index].categoria = articulo.categoria;
-                return listaArticulos[index];
-            }
-            else
-            {
-                return "Articulo con ID: " + id + ", no existe";
-            }
-        }
+            using var conn = new SqlConnection(cs);
+            conn.Open();
 
+            var command = new SqlCommand(
+                $"update articulo set nombre ='{articulo.nombreProducto}', stock_disponible = {articulo.stockDisponible}, precio = {articulo.precio} where id = {id}", conn
+                );
+            try
+            {
+                using SqlDataReader reader = command.ExecuteReader();
+                if(reader.RecordsAffected != 0)
+                {
+                    return $"Articulo {id} fue modificado con exito";
+                }
+                else
+                {
+                    return $"Articulo con el ID: {id}, no existe";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return "Error al Modificar el articulo: " + ex.Message;
+            }
+
+        }
+               
         public dynamic EliminarArticulo(int id)
         {
-            int index = listaArticulos.FindIndex(a => a.idProducto == id);
-            if (index != -1)
-            {
-                listaArticulos.RemoveAt(index);
-                return listaArticulos;
-            }
-            else
-            {
-                return "Articulo con ID: " + id + ", no existe";
-            }
-        }
+            using var conn = new SqlConnection(cs);
+            conn.Open();
 
-        public List<Articulo> getLista()
-        {
-            return listaArticulos;
+            var command = new SqlCommand(
+                $"delete articulo where id = {id}", conn
+                );
+
+            try
+            {
+                using SqlDataReader reader = command.ExecuteReader();
+
+                if(reader.RecordsAffected != 0)
+                {
+                    return $"Articulo {id} Borrado exitosamente.";
+                }
+                else
+                {
+                    return $"Articulo con el ID: {id}, no existe";
+                }
+                
+
+            }
+            catch (Exception ex)
+            {
+                return "Error al Modificar el articulo: " + ex.Message;
+            }
         }
-        */
+        
     }
 
 }

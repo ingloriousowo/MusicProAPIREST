@@ -20,7 +20,7 @@ namespace MusicProAPIREST.Controllers
             return _ars.GetArticulos();
         }
 
-        /*
+        
 
         [HttpGet("{id}")]
         [Produces("application/json")]
@@ -29,14 +29,13 @@ namespace MusicProAPIREST.Controllers
             return _ars.GetArticuloPorId(id);
         }
 
-
+        
         [HttpPost]
         public dynamic PostArticulo([FromBody] Articulo articulo)
         {
-            _ars.AgregarArticulo(articulo);
-            return _ars.getLista();
+            return _ars.AgregarArticulo(articulo);
         }
-
+        
 
         [HttpPut("{id}")]
         public dynamic putArticulo(int id, [FromBody] Articulo articulo)
@@ -44,12 +43,12 @@ namespace MusicProAPIREST.Controllers
             return _ars.ModificarArticulo(id, articulo);
         }
 
+
         [HttpDelete("{id}")]
         public dynamic deleteArticulo(int id)
         {
             return _ars.EliminarArticulo(id);
         }
-        */
 
     }
 }
