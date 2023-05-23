@@ -1,21 +1,46 @@
 ﻿using MusicProAPIREST.Models;
+using Microsoft.Data.SqlClient;
 
 namespace MusicProAPIREST.Services
 {
     public class ArticuloService
     {
-        private List<Articulo> listaArticulos = new List<Articulo>
-    {
-        new Articulo {idProducto = 1, nombreProducto = "Guitarra", categoria = "Intrumentos de Cuerdas"},
-        new Articulo {idProducto = 2, nombreProducto = "Bateria", categoria = "Percusion"},
-        new Articulo {idProducto = 3, nombreProducto = "Cajas", categoria = "Amplificadores"}
-    };
+        string cs = "";
+        
+        public ArticuloService(IConfiguration config)
+        {
+            IConfiguration configuration = config;
+            cs = configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")!;
+        }
 
         public List<Articulo> GetArticulos()
         {
-            return listaArticulos;
-        }
+            using var conn = new SqlConnection(cs);
+            conn.Open();
+            List<Articulo> lista = new List<Articulo>();
 
+            var command = new SqlCommand(
+                "Select * from articulo", conn
+                );
+
+            using SqlDataReader reader = command.ExecuteReader();
+            if( reader != null )
+            {
+                while( reader.Read())
+                {
+                    Articulo articulo = new Articulo();
+                    articulo.idProducto = reader.GetInt32(0);
+                    articulo.nombreProducto = reader.GetString(1);
+                    articulo.stockDisponible = reader.GetInt32(2);
+                    articulo.precio = reader.GetInt32(3);
+
+                    lista.Add(articulo);
+                }
+            }
+
+            return lista;
+        }
+        /*
         public dynamic GetArticuloPorId(int id)
         {
             var articulo = listaArticulos.FirstOrDefault(a => a.idProducto == id);
@@ -65,5 +90,7 @@ namespace MusicProAPIREST.Services
         {
             return listaArticulos;
         }
+        */
     }
+
 }

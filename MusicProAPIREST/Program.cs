@@ -31,13 +31,17 @@ try
     {
         while (reader.Read())
         {
-            Console.WriteLine(reader.GetString(1));
+            Console.WriteLine("Conexion a Base de datos Exitosa!");
         }
+    }
+    else
+    {
+        Console.WriteLine("Sin valores en la Base de datos");
     }
 
 }catch (Exception ex)
 {
-    Console.WriteLine(ex.Message);
+    Console.WriteLine("Fallo la conexion con la base de datos: "+ ex.Message);
 }
 
     // Configure the HTTP request pipeline.

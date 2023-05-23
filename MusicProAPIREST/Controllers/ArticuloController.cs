@@ -20,6 +20,7 @@ namespace MusicProAPIREST.Controllers
             return _ars.GetArticulos();
         }
 
+        /*
 
         [HttpGet("{id}")]
         [Produces("application/json")]
@@ -48,6 +49,7 @@ namespace MusicProAPIREST.Controllers
         {
             return _ars.EliminarArticulo(id);
         }
+        */
 
     }
 }
