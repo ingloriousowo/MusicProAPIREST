@@ -31,17 +31,16 @@ namespace MusicProAPIREST.Controllers
 
 
         [HttpPost]
-        public dynamic PostTarjeta([FromBody] Tarjeta articulo)
+        public dynamic PostTarjeta([FromBody] Tarjeta tarjeta)
         {
-            _ars.AgregarTarjeta(articulo);
-            return _ars.getLista();
+            return _ars.AgregarTarjeta(tarjeta);
         }
 
 
         [HttpPut("{id}")]
-        public dynamic putTarjeta(int id, [FromBody] Tarjeta articulo)
+        public dynamic putTarjeta(int id, [FromBody] Tarjeta tarjeta)
         {
-            return _ars.ModificarTarjeta(id, articulo);
+            return _ars.ModificarTarjeta(id, tarjeta);
         }
 
         [HttpDelete("{id}")]
@@ -52,11 +51,16 @@ namespace MusicProAPIREST.Controllers
 
 
 
-        [HttpPost("{idProducto}/transaccion")]
-        public IActionResult RealizarTransaccion(int idProducto, [FromBody] int montoTransaccion)
+        [HttpPost("transaccion")]
+        public IActionResult RealizarTransaccion([FromBody] TransaccionRequest request)
         {
-            string resultado = _ars.RealizarTransaccion(idProducto, montoTransaccion);
+            string resultado = _ars.RealizarTransaccion(request.CardNumber, request.MontoTransaccion);
             return new OkObjectResult(resultado);
+        }
+        public class TransaccionRequest
+        {
+            public int CardNumber { get; set; }
+            public int MontoTransaccion { get; set; }
         }
     }
 
