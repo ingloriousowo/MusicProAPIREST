@@ -31,15 +31,14 @@ namespace MusicProAPIREST.Services
 
             while (reader.Read())
             {
-                int carroID = reader.GetInt32(0);
-                carroActual.ID = carroID;
+                int carroID = reader.GetInt32(0);               
                 if(carroID != carroActualID)
                 {
-                    carroActual = new Carro();
-                    carroActualID = carroID;
                     lista.Add(carroActual);
+                    carroActual = new Carro();
+                    carroActualID = carroID;                   
                 }
-
+                carroActual.ID = carroID;
                 ArticuloCarro articulo = new ArticuloCarro();
                 articulo.idProducto = reader.GetInt32(1);
                 articulo.nombreProducto = reader.GetString(2);
