@@ -1,5 +1,4 @@
 ﻿using MusicProAPIREST.Models;
-using MusicProAPIREST.Services;
 using Microsoft.Data.SqlClient;
 
 namespace MusicProAPIREST.Services
@@ -7,10 +6,8 @@ namespace MusicProAPIREST.Services
     public class CarroServices
     {
         string cs = "";
-        private readonly ArticuloService _ars;
-        public CarroServices(ArticuloService ars, IConfiguration config)
+        public CarroServices(IConfiguration config)
         {
-            _ars = ars;
             IConfiguration configuration = config;
             cs = configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")!;
         }
