@@ -12,8 +12,7 @@ Servicio web RESTful creado para la evaluación de Integración de plataforma, D
 2. __Controllers__: Controla los ENDPOINTS de la API
 3. __Services__: Toda la logica dentro del servicio, incluyendo las conexiones a la base de datos y sus consultas
 
-Estoy incluye los archivos predeterminados del proyecto como el [Program.cs][documentacion] y [Appsettings.json][documentacion]
-[documentacion]: https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-6.0
+Estoy incluye los archivos predeterminados del proyecto como el [Program.cs](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-6.0) y [Appsettings.json](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-6.0)
 
 La base de datos cuenta con 4 tablas:
 - Articulo
