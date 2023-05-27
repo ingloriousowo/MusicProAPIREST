@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Mvc;
 using MusicProAPIREST.Models;
 using MusicProAPIREST.Services;
 
@@ -54,14 +55,21 @@ namespace MusicProAPIREST.Controllers
         [HttpPost("transaccion")]
         public IActionResult RealizarTransaccion([FromBody] TransaccionRequest request)
         {
-            string resultado = _ars.RealizarTransaccion(request.CardNumber, request.MontoTransaccion);
-            return new OkObjectResult(resultado);
+            try
+            {
+                _ars.RealizarCompra(request.CardNumber, request.carritoId);
+                return new OkObjectResult("La compra se realizó correctamente");
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex.Message);
+            }
         }
+
         public class TransaccionRequest
         {
-            public int CardNumber { get; set; }
-            public int MontoTransaccion { get; set; }
+            public string CardNumber { get; set; }
+            public int carritoId { get; set; }
         }
     }
-
 }

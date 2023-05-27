@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using MusicProAPIREST.Models;
-
 namespace MusicProAPIREST.Services
 {
 
@@ -31,8 +30,9 @@ namespace MusicProAPIREST.Services
                 {
                     Tarjeta tarjeta = new Tarjeta();
                     tarjeta.idTarjeta = reader.GetInt32(0);
-                    tarjeta.Nombre = reader.GetString(1);
-                    tarjeta.Saldo = reader.GetInt32(2);
+                    tarjeta.cardNumber = reader.GetString(1);
+                    tarjeta.Nombre = reader.GetString(2);
+                    tarjeta.Saldo = reader.GetInt32(3);
 
                     lista.Add(tarjeta);
                 }
@@ -57,8 +57,9 @@ namespace MusicProAPIREST.Services
                 while (reader.Read())
                 {
                     tarjeta.idTarjeta = reader.GetInt32(0);
-                    tarjeta.Nombre = reader.GetString(1);
-                    tarjeta.Saldo = reader.GetInt32(2);
+                    tarjeta.cardNumber = reader.GetString(1);
+                    tarjeta.Nombre = reader.GetString(2);
+                    tarjeta.Saldo = reader.GetInt32(3);
                 }
 
                 return tarjeta;
@@ -147,60 +148,63 @@ namespace MusicProAPIREST.Services
         }
 
 
-        public dynamic RealizarTransaccion(int cardNumber, int montoTransaccion)
+        public void RealizarCompra(string cardNumber, int carritoId)
         {
-            List<Tarjeta> lista = new List<Tarjeta>();
-
-            // Realizar la conexión a la base de datos
             using (var conn = new SqlConnection(cs))
             {
                 conn.Open();
 
-                // Obtener la tarjeta específica por su id de la base de datos
-                var command = new SqlCommand(
-                    "SELECT * FROM tarjeta WHERE cardNumber = @cardNumber", conn
-                );
-                command.Parameters.AddWithValue("@cardNumber", cardNumber);
+                // Buscar la tarjeta por su número
+                var tarjetaCommand = new SqlCommand("SELECT * FROM Tarjeta WHERE CardNumber = @CardNumber", conn);
+                tarjetaCommand.Parameters.AddWithValue("@CardNumber", cardNumber);
 
-                using SqlDataReader reader = command.ExecuteReader();
-
-                // Verificar si se encontró la tarjeta en la base de datos
-                if (reader.HasRows)
+                using (SqlDataReader tarjetaReader = tarjetaCommand.ExecuteReader())
                 {
-                    // Leer los datos de la tarjeta
-                    reader.Read();
-                    Tarjeta tarjeta = new Tarjeta();
-                    tarjeta.idTarjeta = reader.GetInt32(0);
-                    tarjeta.cardNumber = reader.GetInt32(1);
-                    tarjeta.Nombre = reader.GetString(2);
-                    tarjeta.Saldo = reader.GetInt32(3);
-
-                    if (tarjeta == null)
+                    if (tarjetaReader.Read())
                     {
-                        return "El id no existe.";
-                    }
+                        Int32 saldo = tarjetaReader.GetInt32(tarjetaReader.GetOrdinal("Saldo"));
+                        tarjetaReader.Close();
+                        // Buscar el carrito por su ID y cargar los artículos relacionados
+                        var carritoCommand = new SqlCommand("SELECT * FROM carro WHERE id_Carro = @CarritoId", conn);
+                        carritoCommand.Parameters.AddWithValue("@CarritoId", carritoId);
 
-                    if (montoTransaccion > tarjeta.Saldo)
+                        using (SqlDataReader carritoReader = carritoCommand.ExecuteReader())
+                        {
+                            if (carritoReader.Read())
+                            {
+                                Int32 total = carritoReader.GetInt32(carritoReader.GetOrdinal("total_Carro"));
+                                carritoReader.Close();
+                                // Verificar si el saldo es suficiente para realizar la compra
+                                if (saldo >= total)
+                                {
+                                    // Descontar el saldo de la tarjeta
+                                    saldo -= total;
+
+                                    // Realizar otras operaciones relacionadas con la compra (por ejemplo, generar una factura)
+
+                                    // Actualizar el saldo de la tarjeta en la base de datos
+                                    var updateCommand = new SqlCommand("UPDATE Tarjeta SET Saldo = @Saldo WHERE CardNumber = @CardNumber", conn);
+                                    updateCommand.Parameters.AddWithValue("@Saldo", saldo);
+                                    updateCommand.Parameters.AddWithValue("@CardNumber", cardNumber);
+                                    updateCommand.ExecuteNonQuery();
+                                }
+                                else
+                                {
+                                    throw new Exception("No tienes saldo suficiente para realizar la compra");
+                                }
+                            }
+                            else
+                            {
+                                throw new Exception("El carrito no existe");
+                            }
+                        }
+                    }
+                    else
                     {
-                        return "No se pudo realizar la transacción de " + tarjeta.Nombre + ", Saldo insuficiente.";
+                        throw new Exception("La tarjeta no existe");
                     }
-
-                    // Realizar la transacción actualizando el saldo en la base de datos
-                    tarjeta.Saldo -= montoTransaccion;
-                    var updateCommand = new SqlCommand(
-                        "UPDATE tarjeta SET Saldo = @saldo WHERE cardNumber = @cardNumber", conn
-                    );
-                    updateCommand.Parameters.AddWithValue("@saldo", tarjeta.Saldo);
-                    updateCommand.Parameters.AddWithValue("@cardNumber", cardNumber);
-                    updateCommand.ExecuteNonQuery();
-
-                    return "Transacción realizada exitosamente.";
-                }
-                else
-                {
-                    return "El id no existe.";
                 }
             }
         }
+        }
     }
-}
