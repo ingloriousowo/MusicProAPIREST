@@ -154,7 +154,7 @@ namespace MusicProAPIREST.Services
             {
                 conn.Open();
 
-                // Buscar la tarjeta por su número
+
                 var tarjetaCommand = new SqlCommand("SELECT * FROM Tarjeta WHERE CardNumber = @CardNumber", conn);
                 tarjetaCommand.Parameters.AddWithValue("@CardNumber", cardNumber);
 
@@ -164,7 +164,6 @@ namespace MusicProAPIREST.Services
                     {
                         Int32 saldo = tarjetaReader.GetInt32(tarjetaReader.GetOrdinal("Saldo"));
                         tarjetaReader.Close();
-                        // Buscar el carrito por su ID y cargar los artículos relacionados
                         var carritoCommand = new SqlCommand("SELECT * FROM carro WHERE id_Carro = @CarritoId", conn);
                         carritoCommand.Parameters.AddWithValue("@CarritoId", carritoId);
 
@@ -174,15 +173,12 @@ namespace MusicProAPIREST.Services
                             {
                                 Int32 total = carritoReader.GetInt32(carritoReader.GetOrdinal("total_Carro"));
                                 carritoReader.Close();
-                                // Verificar si el saldo es suficiente para realizar la compra
+
                                 if (saldo >= total)
                                 {
-                                    // Descontar el saldo de la tarjeta
+
                                     saldo -= total;
 
-                                    // Realizar otras operaciones relacionadas con la compra (por ejemplo, generar una factura)
-
-                                    // Actualizar el saldo de la tarjeta en la base de datos
                                     var updateCommand = new SqlCommand("UPDATE Tarjeta SET Saldo = @Saldo WHERE CardNumber = @CardNumber", conn);
                                     updateCommand.Parameters.AddWithValue("@Saldo", saldo);
                                     updateCommand.Parameters.AddWithValue("@CardNumber", cardNumber);
