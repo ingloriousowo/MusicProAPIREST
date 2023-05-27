@@ -20,5 +20,25 @@ namespace MusicProAPIREST.Controllers
         {
             return _crrs.getCarros();
         }
+
+        [HttpGet("{id}")]
+        [Produces("application/json")]
+        public Carro getCarroPorID(int id)
+        {
+            return _crrs.getCarroPorID(id);
+        }
+
+        [HttpPut]
+        public string postCarro()
+        {
+            return _crrs.crearCarro();
+        }
+
+        [HttpPut]
+        [Route("/agregarArticulo")]
+        public string AgregarArticulo(int id_articulo, int id_Carro, int cantidad)
+        {
+            return _crrs.agregarArticuloCarro(id_articulo, id_Carro, cantidad);
+        }
     }
 }
