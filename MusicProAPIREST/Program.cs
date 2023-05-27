@@ -7,7 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddScoped<ArticuloService>();
-builder.Services.AddScoped<TarjetaService>();
 builder.Services.AddScoped<CarroServices>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

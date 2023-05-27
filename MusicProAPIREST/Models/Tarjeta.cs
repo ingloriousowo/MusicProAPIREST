@@ -1,12 +1,9 @@
 ﻿namespace MusicProAPIREST.Models
 {
-    public class Tarjeta
+    public class TransaccionRequest
     {
-        public int idTarjeta { get; set; }
-        public string cardNumber { get; set; }
-        public string? Nombre { get; set; }
-        public int Saldo { get; set; }
-
+        public string CardNumber { get; set; }
+        public int carritoId { get; set; }
     }
 
 }

@@ -1,75 +1,55 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MusicProAPIREST.Models;
-using MusicProAPIREST.Services;
+using Newtonsoft.Json;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace MusicProAPIREST.Controllers
+namespace tarjetaController
 {
+    [Route("RealizarPago")]
     [ApiController]
-    [Route("Tarjeta")]
-    public class TarjetaController
+    public class ApiController : ControllerBase
     {
-        private readonly TarjetaService _ars;
-        public TarjetaController(TarjetaService ars)
+        private readonly HttpClient httpClient;
+
+        public ApiController()
         {
-            _ars = ars;
+            httpClient = new HttpClient();
         }
-
-        [HttpGet]
-        [Produces("application/json")]
-        public List<Tarjeta> getTarjeta()
-        {
-            return _ars.GetTarjeta();
-        }
-
-
-        [HttpGet("{id}")]
-        [Produces("application/json")]
-        public dynamic getTarjetaPorID(int id)
-        {
-            return _ars.GetTarjetaPorId(id);
-        }
-
 
         [HttpPost]
-        public dynamic PostTarjeta([FromBody] Tarjeta tarjeta)
+        public async Task<IActionResult> PostData([FromBody] TransaccionRequest datos)
         {
-            return _ars.AgregarTarjeta(tarjeta);
-        }
+            string apiUrl = "http://localhost:5161/Tarjeta/transaccion";
 
-
-        [HttpPut("{id}")]
-        public dynamic putTarjeta(int id, [FromBody] Tarjeta tarjeta)
-        {
-            return _ars.ModificarTarjeta(id, tarjeta);
-        }
-
-        [HttpDelete("{id}")]
-        public dynamic deleteTarjeta(int id)
-        {
-            return _ars.EliminarTarjeta(id);
-        }
-
-
-
-        [HttpPost("transaccion")]
-        public IActionResult RealizarTransaccion([FromBody] TransaccionRequest request)
-        {
             try
             {
-                _ars.RealizarCompra(request.CardNumber, request.carritoId);
-                return new OkObjectResult("La compra se realizó correctamente");
+                string json = JsonConvert.SerializeObject(datos);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseData = await response.Content.ReadAsStringAsync();
+                    return Ok(responseData);
+                }
+                else if ((int)response.StatusCode == 400)
+                {
+                    string errorResponse = await response.Content.ReadAsStringAsync();
+                    return BadRequest(errorResponse);
+                }
+                else
+                {
+                    return StatusCode((int)response.StatusCode);
+                }
             }
             catch (Exception ex)
             {
-                return new BadRequestObjectResult(ex.Message);
+                // Puedes personalizar cómo deseas manejar la excepción aquí
+                return StatusCode(500, $"Error: {ex.Message}");
             }
-        }
-
-        public class TransaccionRequest
-        {
-            public string CardNumber { get; set; }
-            public int carritoId { get; set; }
         }
     }
 }
