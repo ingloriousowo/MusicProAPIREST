@@ -13,7 +13,12 @@ namespace MusicProAPIREST.Services
             cs = configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")!;
         }
 
-        public List<Articulo> GetArticulos()
+        public ArticuloService()
+        {
+            // Constructor sin parámetros
+        }
+
+        public virtual List<Articulo> GetArticulos()
         {
             using var conn = new SqlConnection(cs);
             conn.Open();
@@ -41,7 +46,7 @@ namespace MusicProAPIREST.Services
             return lista;
         }
         
-        public dynamic GetArticuloPorId(int id)
+        public virtual dynamic GetArticuloPorId(int id)
         {
             Articulo articulo = new Articulo();
             using var conn = new SqlConnection(cs);
@@ -71,7 +76,7 @@ namespace MusicProAPIREST.Services
         }
 
 
-        public string AgregarArticulo(Articulo articulo)
+        public virtual string AgregarArticulo(Articulo articulo)
         {
             using var conn = new SqlConnection(cs);
             conn.Open();
@@ -93,7 +98,7 @@ namespace MusicProAPIREST.Services
         }
         
         
-        public dynamic ModificarArticulo(int id, Articulo articulo)
+        public virtual dynamic ModificarArticulo(int id, Articulo articulo)
         {
             using var conn = new SqlConnection(cs);
             conn.Open();
@@ -121,7 +126,7 @@ namespace MusicProAPIREST.Services
 
         }
                
-        public dynamic EliminarArticulo(int id)
+        public virtual dynamic EliminarArticulo(int id)
         {
             using var conn = new SqlConnection(cs);
             conn.Open();
