@@ -23,6 +23,7 @@ La base de datos cuenta con 4 tablas:
 ---
 ## Objetivo del Servicio
 Servir de comunicación con la base de datos, permitiendo administrar los articulos y los carros de la tienda __Music PRO__, incluyendo un validador de tarjetas de debito que verifica el saldo y la existencia de la misma.
+
 ---
 ## Pruebas Unitarias
 Se agrego un proyecto a la solución encargado de revisar el correcto funcionamiento de los métodos dentro de el Services.
